@@ -34,5 +34,3 @@ func main() {
 	fmt.Println("Fav OO language : ", languages())
 	fmt.Println("Sum is : ", looper(3))
 }
-
-
