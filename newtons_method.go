@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 
-
 func Sqrt(x float64) float64 {
     guess := x/2.0
 
