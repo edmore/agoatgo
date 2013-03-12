@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 func add1(i int) int {
@@ -33,6 +34,16 @@ type Person struct {
   Surname string
 }
 
+func WordCount(s string) map[string]int {
+	m := make(map[string]int)
+	split := strings.Fields(s)
+
+	for _, v := range split{
+		m[v] = m[v] + 1
+	}
+	return m
+}
+
 func main() {
 	p := Person{Name : "Edmore"}
         q := new(Person)
@@ -40,6 +51,8 @@ func main() {
 	r := &p
         r.Name = "Tu"
 	s := []int{2,4,5,6,7}
+        m := make(map[string]int)
+        m["Age"] = 30
 
    	fmt.Println("Add 1 : ", add1(2))
 	fmt.Println("Value of Pi : ", pi())
@@ -48,5 +61,6 @@ func main() {
 	fmt.Println("Look Ma a struct changed by a pointer : ", p.Name)
 	fmt.Println("Look Ma using the new keyword: ", q.Name)
 	fmt.Println("s: ", s[1:4])
-
+	fmt.Println("Age : ", m["Age"])
+        fmt.Println(WordCount("I ate a donut. Then I ate another donut."))
 }
