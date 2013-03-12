@@ -44,6 +44,15 @@ func WordCount(s string) map[string]int {
 	return m
 }
 
+
+func fibonacci() func() int {
+	x, y, z := 0, 1, 0
+	return func() int {
+		z, x, y = x, y, x+y
+		return z
+	}
+}
+
 func main() {
 	p := Person{Name : "Edmore"}
         q := new(Person)
@@ -63,4 +72,9 @@ func main() {
 	fmt.Println("s: ", s[1:4])
 	fmt.Println("Age : ", m["Age"])
         fmt.Println(WordCount("I ate a donut. Then I ate another donut."))
+
+	f := fibonacci()
+	for i := 0; i < 10; i++ {
+		fmt.Println(f())
+	}
 }
