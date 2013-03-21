@@ -24,6 +24,10 @@ func add1(i int) int {
 	return i + 1
 }
 
+func add1ch(i int, c chan int){
+	c <- i + 1
+}
+
 func pi() float32 {
 	return math.Pi
 }
@@ -91,7 +95,29 @@ func main() {
 	fmt.Println(r)
 	fmt.Println(r.getName())
 	f := fibonacci()
+
 	for i := 0; i < 10; i++ {
 		fmt.Println(f())
 	}
+
+	c := make(chan int)
+	go add1ch(3, c)
+        go add1ch(5, c)
+	fmt.Println(<-c,<-c)
+
+	// buffered channel
+	ch := make(chan int, 2)
+	ch <- 1
+	ch <- 2 // doesnt block
+	fmt.Println(<-ch)
+	ch <- 3 // would have blocked had we not received
+	fmt.Println(<-ch)
+	fmt.Println(<-ch)
+
+	messages := make(chan string, 0)
+	messages <- "buffered"
+	messages <- "channel"
+
+	fmt.Println(<-messages)
+	fmt.Println(<-messages)
 }
