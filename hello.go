@@ -114,10 +114,12 @@ func main() {
 	fmt.Println(<-ch)
 	fmt.Println(<-ch)
 
-	messages := make(chan string, 0)
-	messages <- "buffered"
-	messages <- "channel"
-
-	fmt.Println(<-messages)
-	fmt.Println(<-messages)
+	messages := make(chan string)
+        // closure
+        go func(){
+		fmt.Println("hello")
+		messages <- "done"
+	}()
+	fmt.Println("Do something while you wait ...")
+        fmt.Println(<-messages)
 }
