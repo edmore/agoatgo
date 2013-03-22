@@ -115,7 +115,7 @@ func main() {
 	fmt.Println(<-ch)
 
 	messages := make(chan string)
-        // closure
+        // closure - run in parallel so there is no blocking
         go func(){
 		fmt.Println("hello")
 		messages <- "done"
