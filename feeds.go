@@ -11,6 +11,11 @@ func get_key(v string, key string) string {
 	return strings.Join(out, "")
 }
 
+func get_feed(login string, venue string, url string, user string, pass string, m chan string){
+	fmt.Println("Processing feed for", venue, "...")
+	m <- "done"
+}
+
 func main() {
 	app_root := "/usr/local/camera_dashboard"
 	fmt.Println(app_root)
@@ -35,11 +40,7 @@ func main() {
 		if (cam_user != ""){
 			login_cridentials = strings.Join([]string{"-u ", cam_user, " ", cam_password}, "")
 		}
-		fmt.Println(login_cridentials, "", cam_url)
-		go func(){
-			fmt.Println("Running feed for", venue_name, "...")
-			messages <- "done"
-		}()
+		go get_feed(login_cridentials, venue_name, cam_url, cam_user, cam_password, messages)
 		fmt.Println(<-messages)
 	}
 }
