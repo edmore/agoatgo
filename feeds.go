@@ -1,9 +1,10 @@
 package main
 
 import(
-	"fmt"
-        "github.com/garyburd/redigo/redis"
+	"github.com/garyburd/redigo/redis"
+        "fmt"
         "strings"
+        "os"
 )
 
 func get_key(v string, key string) string {
@@ -11,13 +12,8 @@ func get_key(v string, key string) string {
 	return strings.Join(out, "")
 }
 
-func get_feed(login string, venue string, url string, user string, pass string, m chan string){
-	fmt.Println("Processing feed for", venue, "...")
-	m <- "done"
-}
-
 func main() {
-	app_root := "/usr/local/camera_dashboard"
+	app_root := "/Users/etmoyo/Sites/camera_dashboard"
 	fmt.Println(app_root)
 
         c, err := redis.Dial("tcp", ":6379")
@@ -40,7 +36,12 @@ func main() {
 		if (cam_user != ""){
 			login_cridentials = strings.Join([]string{"-u ", cam_user, " ", cam_password}, "")
 		}
-		go get_feed(login_cridentials, venue_name, cam_url, cam_user, cam_password, messages)
+		go func(){
+			fmt.Println("Processing feed for", venue_name, "...", cam_url, login_cridentials)
+			cmd := strings.Join([]string{app_root, "/public/feeds/", venue_name}, "")
+			os.MkdirAll(cmd, 0755)
+			messages <- "done"
+		}()
 		fmt.Println(<-messages)
 	}
 }
