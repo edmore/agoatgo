@@ -33,7 +33,7 @@ func main() {
 
                 login_cridentials := ""
 		if (cam_user != ""){
-			login_cridentials = strings.Join([]string{"-u ", cam_password}, "")
+			login_cridentials = strings.Join([]string{"-u ", cam_user, " ", cam_password}, "")
 		}
 		fmt.Println(login_cridentials, "", cam_url)
 		go func(){
