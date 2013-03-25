@@ -5,6 +5,8 @@ import(
         "fmt"
         "strings"
         "os"
+"log"
+	"os/exec"
 )
 
 func get_key(v string, key string) string {
@@ -40,6 +42,12 @@ func main() {
 			fmt.Println("Processing feed for", venue_name, "...", cam_url, login_cridentials)
 			cmd := strings.Join([]string{app_root, "/public/feeds/", venue_name}, "")
 			os.MkdirAll(cmd, 0755)
+
+			out, err := exec.Command("ls", "-alh").Output()
+			if err != nil {
+				log.Fatal(err)
+			}
+			os.Stdout.Write(out)
 			messages <- "done"
 		}()
 		fmt.Println(<-messages)
