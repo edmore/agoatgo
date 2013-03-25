@@ -6,8 +6,8 @@ import(
         "strings"
 )
 
-func get_venue_key(v string, attribute string) string {
-	out := []string{"venue:",v, attribute}
+func get_key(v string, key string) string {
+	out := []string{"venue:",v, key}
 	return strings.Join(out, "")
 }
 
@@ -26,10 +26,10 @@ func main() {
 	messages := make(chan string)
 
 	for _, v := range venue_list {
-		venue_name, _ := redis.String(c.Do("GET", get_venue_key(v, ":venue_name")))
-		cam_url, _ := redis.String(c.Do("GET", get_venue_key(v, ":cam_url")))
-		cam_user, _ := redis.String(c.Do("GET", get_venue_key(v, ":cam_user")))
-		cam_password, _ := redis.String(c.Do("GET", get_venue_key(v, ":cam_password")))
+		venue_name, _ := redis.String(c.Do("GET", get_key(v, ":venue_name")))
+		cam_url, _ := redis.String(c.Do("GET", get_key(v, ":cam_url")))
+		cam_user, _ := redis.String(c.Do("GET", get_key(v, ":cam_user")))
+		cam_password, _ := redis.String(c.Do("GET", get_key(v, ":cam_password")))
 
                 login_cridentials := ""
 		if (cam_user != ""){
