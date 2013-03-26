@@ -4,9 +4,10 @@ import(
 	"github.com/garyburd/redigo/redis"
         "fmt"
         "strings"
-        "os"
         "log"
 	"os/exec"
+        "bytes"
+        "os"
 )
 
 func get_key(v string, key string) string {
@@ -41,26 +42,29 @@ func main() {
 		cam_url, _ := redis.String(c.Do("GET", get_key(v, ":cam_url")))
 		cam_user, _ := redis.String(c.Do("GET", get_key(v, ":cam_user")))
 		cam_password, _ := redis.String(c.Do("GET", get_key(v, ":cam_password")))
+		ffmpeg_path := get_path("ffmpeg")
 
                 login_cridentials := ""
 		if (cam_user != ""){
 			login_cridentials = strings.Join([]string{"-u ", cam_user, " ", cam_password}, "")
 		}
 
-		ffmpeg_path := get_path("ffmpeg")
-
 		go func(){
 			fmt.Println("Processing feed for", venue_name, "...", cam_url, login_cridentials)
-			cmd := strings.Join([]string{app_root, "/public/feeds/", venue_name}, "")
-			os.MkdirAll(cmd, 0755)
+			dir := strings.Join([]string{app_root, "/public/feeds/", venue_name}, "")
+			os.MkdirAll(dir, 0755)
 
 			fmt.Println(ffmpeg_path)
-                        path := get_path("ffmpeg")
-			out, err := exec.Command(path, "-version", ">/dev/null").Output()
+
+			cmd := exec.Command(ffmpeg_path, "-version", ">/dev/null")
+
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			err := cmd.Run()
 			if err != nil {
 				log.Fatal(err)
 			}
-			os.Stdout.Write(out)
+			fmt.Printf(out.String())
 			messages <- "done"
 		}()
 		fmt.Println(<-messages)
