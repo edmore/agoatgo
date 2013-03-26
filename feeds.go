@@ -14,6 +14,14 @@ func get_key(v string, key string) string {
 	return strings.Join(out, "")
 }
 
+func get_path(p string) string {
+	path, err := exec.LookPath("ffmpeg")
+	if err != nil {
+		log.Fatal("LookPath: ", err)
+	}
+	return path
+}
+
 func main() {
 	app_root := "/Users/etmoyo/Sites/camera_dashboard"
 	fmt.Println(app_root)
@@ -38,12 +46,17 @@ func main() {
 		if (cam_user != ""){
 			login_cridentials = strings.Join([]string{"-u ", cam_user, " ", cam_password}, "")
 		}
+
+		ffmpeg_path := get_path("ffmpeg")
+
 		go func(){
 			fmt.Println("Processing feed for", venue_name, "...", cam_url, login_cridentials)
 			cmd := strings.Join([]string{app_root, "/public/feeds/", venue_name}, "")
 			os.MkdirAll(cmd, 0755)
 
-			out, err := exec.Command("ls", "-alh").Output()
+			fmt.Println(ffmpeg_path)
+                        path := get_path("ffmpeg")
+			out, err := exec.Command(path, "-version", ">/dev/null").Output()
 			if err != nil {
 				log.Fatal(err)
 			}
