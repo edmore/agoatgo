@@ -6,21 +6,25 @@ import(
         "strings"
         "log"
 	"os/exec"
-        "bytes"
         "os"
+        "io"
 )
 
-func get_key(v string, key string) string {
+func getKey(v string, key string) string {
 	out := []string{"venue:",v, key}
 	return strings.Join(out, "")
 }
 
-func get_path(p string) string {
+func getPath(p string) string {
 	path, err := exec.LookPath(p)
-	if err != nil {
-		log.Fatal("LookPath: ", err)
-	}
+	checkError(err)
 	return path
+}
+
+func checkError(err error) {
+	if err != nil {
+		log.Fatalf("Error: %s", err)
+	}
 }
 
 func main() {
@@ -29,26 +33,23 @@ func main() {
 
         c, err := redis.Dial("tcp", ":6379")
         defer c.Close()
-
-	if err != nil {
-		fmt.Println(err)
-	}
+	checkError(err)
 
 	venue_list, _ := redis.Strings(c.Do("LRANGE", "venues", 0, -1))
 	messages := make(chan string)
 
 	for _, v := range venue_list {
-		venue_name, _ := redis.String(c.Do("GET", get_key(v, ":venue_name")))
-		cam_url, _ := redis.String(c.Do("GET", get_key(v, ":cam_url")))
-		cam_user, _ := redis.String(c.Do("GET", get_key(v, ":cam_user")))
-		cam_password, _ := redis.String(c.Do("GET", get_key(v, ":cam_password")))
+		venue_name, _ := redis.String(c.Do("GET", getKey(v, ":venue_name")))
+		cam_url, _ := redis.String(c.Do("GET", getKey(v, ":cam_url")))
+		cam_user, _ := redis.String(c.Do("GET", getKey(v, ":cam_user")))
+		cam_password, _ := redis.String(c.Do("GET", getKey(v, ":cam_password")))
 
-		ffmpeg := get_path("ffmpeg")
-		openRTSP := get_path("openRTSP")
+		ffmpeg := getPath("ffmpeg")
+		openRTSP := getPath("openRTSP")
 
                 login_cridentials := ""
 		if (cam_user != ""){
-			login_cridentials = "-u " + cam_user +  " " + cam_password
+			login_cridentials = "-u "+cam_user+" "+cam_password
 		}
 
 		go func(){
@@ -60,13 +61,17 @@ func main() {
              		fmt.Println(openRTSP)
 
 			cmd := exec.Command(ffmpeg, "-version")
-			var out bytes.Buffer
-			cmd.Stdout = &out
-			err := cmd.Run()
-			if err != nil {
-				log.Fatal(err)
-			}
-			fmt.Printf(out.String())
+			// if cmd.StdoutPipe() not called output goes to /dev/null
+			// stdout, err := cmd.StdoutPipe()
+			checkError(err)
+		        stderr, err := cmd.StderrPipe()
+		        checkError(err)
+                        //start command
+			err = cmd.Start()
+			checkError(err)
+			//go io.Copy(os.Stdout, stdout)
+			go io.Copy(os.Stderr, stderr)
+			cmd.Wait()
 
 			messages <- "done"
 		}()
