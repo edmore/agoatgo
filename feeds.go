@@ -7,7 +7,6 @@ import(
         "log"
 	"os/exec"
         "os"
-        "io"
 )
 
 func getKey(v string, key string) string {
@@ -60,20 +59,13 @@ func main() {
 			fmt.Println(ffmpeg)
              		fmt.Println(openRTSP)
 
-			cmd := exec.Command("bash", "-c", `ffmpeg -version`)
-			// if cmd.StdoutPipe() not called output goes to /dev/null
-			stdout, err := cmd.StdoutPipe()
-			checkError(err)
-		        stderr, err := cmd.StderrPipe()
-		        checkError(err)
+			cmd := exec.Command("bash", "-c", ffmpeg+` -i 2> /dev/null`)
                         //start command
 			err = cmd.Start()
 			checkError(err)
-			go io.Copy(os.Stdout, stdout)
-			go io.Copy(os.Stderr, stderr)
 			cmd.Wait()
 
-			messages <- "done"
+			messages <- venue_name + " feed processed"
 		}()
 		fmt.Println(<-messages)
 	}
