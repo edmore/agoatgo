@@ -15,7 +15,7 @@ func get_key(v string, key string) string {
 }
 
 func get_path(p string) string {
-	path, err := exec.LookPath("ffmpeg")
+	path, err := exec.LookPath(p)
 	if err != nil {
 		log.Fatal("LookPath: ", err)
 	}
