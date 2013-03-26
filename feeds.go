@@ -60,16 +60,16 @@ func main() {
 			fmt.Println(ffmpeg)
              		fmt.Println(openRTSP)
 
-			cmd := exec.Command(ffmpeg, "-version")
+			cmd := exec.Command("bash", "-c", `ffmpeg -version`)
 			// if cmd.StdoutPipe() not called output goes to /dev/null
-			// stdout, err := cmd.StdoutPipe()
-			//checkError(err)
+			stdout, err := cmd.StdoutPipe()
+			checkError(err)
 		        stderr, err := cmd.StderrPipe()
 		        checkError(err)
                         //start command
 			err = cmd.Start()
 			checkError(err)
-			//go io.Copy(os.Stdout, stdout)
+			go io.Copy(os.Stdout, stdout)
 			go io.Copy(os.Stderr, stderr)
 			cmd.Wait()
 
