@@ -63,7 +63,7 @@ func main() {
 			cmd := exec.Command(ffmpeg, "-version")
 			// if cmd.StdoutPipe() not called output goes to /dev/null
 			// stdout, err := cmd.StdoutPipe()
-			checkError(err)
+			//checkError(err)
 		        stderr, err := cmd.StderrPipe()
 		        checkError(err)
                         //start command
