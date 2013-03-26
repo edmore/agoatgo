@@ -42,22 +42,24 @@ func main() {
 		cam_url, _ := redis.String(c.Do("GET", get_key(v, ":cam_url")))
 		cam_user, _ := redis.String(c.Do("GET", get_key(v, ":cam_user")))
 		cam_password, _ := redis.String(c.Do("GET", get_key(v, ":cam_password")))
-		ffmpeg_path := get_path("ffmpeg")
+
+		ffmpeg := get_path("ffmpeg")
+		openRTSP := get_path("openRTSP")
 
                 login_cridentials := ""
 		if (cam_user != ""){
-			login_cridentials = strings.Join([]string{"-u ", cam_user, " ", cam_password}, "")
+			login_cridentials = "-u " + cam_user +  " " + cam_password
 		}
 
 		go func(){
 			fmt.Println("Processing feed for", venue_name, "...", cam_url, login_cridentials)
-			dir := strings.Join([]string{app_root, "/public/feeds/", venue_name}, "")
+			dir := app_root+"/public/feeds/"+venue_name
 			os.MkdirAll(dir, 0755)
 
-			fmt.Println(ffmpeg_path)
+			fmt.Println(ffmpeg)
+             		fmt.Println(openRTSP)
 
-			cmd := exec.Command(ffmpeg_path, "-version", ">/dev/null")
-
+			cmd := exec.Command(ffmpeg, "-version")
 			var out bytes.Buffer
 			cmd.Stdout = &out
 			err := cmd.Run()
@@ -65,6 +67,7 @@ func main() {
 				log.Fatal(err)
 			}
 			fmt.Printf(out.String())
+
 			messages <- "done"
 		}()
 		fmt.Println(<-messages)
