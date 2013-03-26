@@ -59,7 +59,7 @@ func main() {
 			fmt.Println(ffmpeg)
              		fmt.Println(openRTSP)
 
-			cmd := exec.Command("bash", "-c", ffmpeg+` -i 2> /dev/null`)
+			cmd := exec.Command("bash", "-c", ffmpeg+` -version 2> /dev/null`)
                         //start command
 			err = cmd.Start()
 			checkError(err)
