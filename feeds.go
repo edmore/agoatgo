@@ -74,6 +74,7 @@ func main() {
 				stats, err := os.Stat(image)
 				checkError(err)
 				fmt.Println(stats.ModTime())
+				c.Do("SET","venue:"+v+":last_updated", stats.ModTime())
 			}
 		messages <- venue_name + " feed processed"
 		}()
