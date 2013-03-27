@@ -55,7 +55,8 @@ func main() {
 			os.MkdirAll(dir, 0755)
 
 			feed_cmd := openRTSP+` `+login_cridentials+ ` -F `+venue_name+` -d 10 -b 300000 `+cam_url+` \
-                                            && `+ffmpeg+` -i `+venue_name+`video-H264-1 -r 1 -s 320x180 -ss 5 -vframes 1 -f image2 `+app_root+`/public/feeds/`+venue_name+`/`+venue_name+`.jpeg\
+                                            && `+ffmpeg+` -i `+venue_name+`video-H264-1 -r 1 -s 320x180 -ss 5 -vframes 1\
+                                            -f image2 `+app_root+`/public/feeds/`+venue_name+`/`+venue_name+`.jpeg\
                                             && rm -f `+venue_name+`video-H264-1`
 
 			cmd := exec.Command("bash", "-c", feed_cmd)
@@ -64,7 +65,13 @@ func main() {
 			checkError(err)
                         fmt.Println("Do some trivial stuff here ...")
 			cmd.Wait()
-
+                        // update the last_updated date
+                        image := app_root+"/public/feeds/"+venue_name+"/"+venue_name+".jpg"
+			_, err := os.Open(image)
+                        //if no error generated when you try to open image
+			if os.IsNotExist(err) {
+				fmt.Println(image + " exists ...")
+			}
 			messages <- venue_name + " feed processed"
 		}()
 		fmt.Println(<-messages)
