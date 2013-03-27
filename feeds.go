@@ -7,6 +7,7 @@ import(
         "log"
 	"os/exec"
         "os"
+"sync"
 )
 
 func getKey(v string, key string) string {
@@ -27,13 +28,13 @@ func checkError(err error) {
 }
 
 func main() {
+        var wg sync.WaitGroup
 	app_root := "/Users/edmoremoyo/Sites/camera_dashboard_v2"
         c, err := redis.Dial("tcp", ":6379")
         defer c.Close()
 	checkError(err)
 
 	venue_list, _ := redis.Strings(c.Do("LRANGE", "venues", 0, -1))
-	messages := make(chan string)
 
 	for _, v := range venue_list {
 		venue_name, _ := redis.String(c.Do("GET", getKey(v, ":venue_name")))
@@ -49,7 +50,8 @@ func main() {
 			login_cridentials = "-u "+cam_user+" "+cam_password
 		}
 
-		go func(){
+		go func(v string){
+			wg.Add(1)
 			fmt.Println("Processing feed for", venue_name, "...")
 			dir := app_root+"/public/feeds/"+venue_name
 			os.MkdirAll(dir, 0755)
@@ -61,24 +63,21 @@ func main() {
 
 			cmd := exec.Command("bash", "-c", feed_cmd)
                         //start command
-			err = cmd.Start()
+			err = cmd.Run()
 			checkError(err)
-                        fmt.Println("Do some trivial stuff here ...")
 
                         // update the last_updated date
                         image := app_root+"/public/feeds/"+venue_name+"/"+venue_name+".jpeg"
 			_, err := os.Open(image)
 
-			cmd.Wait()
 			//returns true if it gets "no such file or directory" error
 			if !os.IsNotExist(err) {
 				stats, err := os.Stat(image)
 				checkError(err)
-				fmt.Println(stats.ModTime())
 				c.Do("SET","venue:"+v+":last_updated", stats.ModTime())
 			}
-			messages <- venue_name + " feed processed"
-		}()
-		fmt.Println(<-messages)
+			wg.Done()
+		}(v)
 	}
+	wg.Wait()
 }
