@@ -64,11 +64,12 @@ func main() {
 			err = cmd.Start()
 			checkError(err)
                         fmt.Println("Do some trivial stuff here ...")
-			cmd.Wait()
+
                         // update the last_updated date
                         image := app_root+"/public/feeds/"+venue_name+"/"+venue_name+".jpeg"
 			_, err := os.Open(image)
-			checkError(err)
+
+			cmd.Wait()
 			//returns true if it gets "no such file or directory" error
 			if !os.IsNotExist(err) {
 				stats, err := os.Stat(image)
@@ -76,7 +77,7 @@ func main() {
 				fmt.Println(stats.ModTime())
 				c.Do("SET","venue:"+v+":last_updated", stats.ModTime())
 			}
-		messages <- venue_name + " feed processed"
+			messages <- venue_name + " feed processed"
 		}()
 		fmt.Println(<-messages)
 	}
