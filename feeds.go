@@ -62,14 +62,14 @@ func main() {
                                             && rm -f `+venue_name+`video-H264-1`
 
 			cmd := exec.Command("bash", "-c", feed_cmd)
-                        //start command
+                        // run command
 			err = cmd.Run()
 
                         // update the last_updated date
                         image := app_root+"/public/feeds/"+venue_name+"/"+venue_name+".jpeg"
 			_, err := os.Open(image)
 
-			//returns true if it gets "no such file or directory" error
+			// returns true if it gets "no such file or directory" error
 			if !os.IsNotExist(err) {
 				stats, err := os.Stat(image)
 				checkError(err)
