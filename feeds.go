@@ -64,7 +64,6 @@ func main() {
 			cmd := exec.Command("bash", "-c", feed_cmd)
                         //start command
 			err = cmd.Run()
-			checkError(err)
 
                         // update the last_updated date
                         image := app_root+"/public/feeds/"+venue_name+"/"+venue_name+".jpeg"
