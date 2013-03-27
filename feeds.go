@@ -7,7 +7,7 @@ import(
         "log"
 	"os/exec"
         "os"
-        "io"
+  //      "io"
 )
 
 func getKey(v string, key string) string {
@@ -28,7 +28,7 @@ func checkError(err error) {
 }
 
 func main() {
-	app_root := "/Users/etmoyo/Sites/camera_dashboard"
+	app_root := "/Users/edmoremoyo/Sites/camera_dashboard_v2"
 	fmt.Println(app_root)
 
         c, err := redis.Dial("tcp", ":6379")
@@ -59,18 +59,14 @@ func main() {
 
 			fmt.Println(ffmpeg)
              		fmt.Println(openRTSP)
-
-			cmd := exec.Command("bash", "-c", ffmpeg+` -version`)
-			// if cmd.StdoutPipe() not called output goes to /dev/null
-			//stdout, err := cmd.StdoutPipe()
-			//checkError(err)
-		        stderr, err := cmd.StderrPipe()
-		        checkError(err)
+			feed_cmd := `openRTSP `+login_cridentials+ ` -F `+venue_name+` -d 10 -b 300000 `+cam_url+` \
+                                            && ffmpeg -i `+venue_name+`video-H264-1 -r 1 -s 320x180 -ss 5 -vframes 1 -f image2 `+app_root+`/public/feeds/`+venue_name+`/`+venue_name+`.jpeg\
+                                            && rm -f `+venue_name+`video-H264-1`
+			fmt.Println(feed_cmd)
+			cmd := exec.Command("bash", "-c", feed_cmd)
                         //start command
 			err = cmd.Start()
 			checkError(err)
-			//go io.Copy(os.Stdout, stdout)
-			go io.Copy(os.Stderr, stderr)
 			cmd.Wait()
 
 			messages <- venue_name + " feed processed"
