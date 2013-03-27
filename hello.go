@@ -12,6 +12,22 @@ type Person struct {
   Surname string
 }
 
+func Sqrt(x float64) float64 {
+	z := x/2.0
+	for y:=0; y < 11; y++ {
+		z = z - (((z*z) - x) / (2 * z))
+	}
+	return z
+}
+
+func Sqrt2(x float64) float64 {
+	guess := x/2.0
+	for y:=0; y < 11; y++ {
+		guess = (guess + x/guess)/2.0
+	}
+	return guess
+}
+
 func (p *Person) setSurname(s string){
 	p.Surname = s
 }
@@ -49,10 +65,10 @@ func looper(max int) int {
 
 func WordCount(s string) map[string]int {
 	m := make(map[string]int)
-	split := strings.Fields(s)
+	split := strings.Fields(s) // returns a slice
 
 	for _, v := range split{
-		m[v] = m[v] + 1
+		m[v]++
 	}
 	return m
 }
@@ -100,13 +116,17 @@ func main() {
 		fmt.Println(f())
 	}
 
+	fmt.Println(Sqrt(36))
+	fmt.Println(Sqrt2(36))
+
 	c := make(chan int)
 	go add1ch(3, c)
         go add1ch(5, c)
-	fmt.Println(<-c,<-c)
+        fmt.Println(<-c, <-c)
 
 	// buffered channel
 	ch := make(chan int, 2)
+	fmt.Println("buffer size : ", cap(ch))
 	ch <- 1
 	ch <- 2 // doesnt block
 	fmt.Println(<-ch)
@@ -122,4 +142,6 @@ func main() {
 	}()
 	fmt.Println("Do something while you wait ...")
         fmt.Println(<-messages)
+
+
 }
