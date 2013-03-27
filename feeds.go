@@ -33,7 +33,6 @@ func main() {
         c, err := redis.Dial("tcp", ":6379")
         defer c.Close()
 	checkError(err)
-
 	venue_list, _ := redis.Strings(c.Do("LRANGE", "venues", 0, -1))
 
 	for _, v := range venue_list {
@@ -41,11 +40,10 @@ func main() {
 		cam_url, _ := redis.String(c.Do("GET", getKey(v, ":cam_url")))
 		cam_user, _ := redis.String(c.Do("GET", getKey(v, ":cam_user")))
 		cam_password, _ := redis.String(c.Do("GET", getKey(v, ":cam_password")))
-
 		ffmpeg := getPath("ffmpeg")
 		openRTSP := getPath("openRTSP")
-
                 login_cridentials := ""
+
 		if (cam_user != ""){
 			login_cridentials = "-u "+cam_user+" "+cam_password
 		}
@@ -55,7 +53,6 @@ func main() {
 			fmt.Println("Processing feed for", venue_name, "...")
 			dir := app_root+"/public/feeds/"+venue_name
 			os.MkdirAll(dir, 0755)
-
 			feed_cmd := openRTSP+` `+login_cridentials+ ` -F `+venue_name+` -d 10 -b 300000 `+cam_url+` \
                                             && `+ffmpeg+` -i `+venue_name+`video-H264-1 -r 1 -s 320x180 -ss 5 -vframes 1\
                                             -f image2 `+app_root+`/public/feeds/`+venue_name+`/`+venue_name+`.jpeg\
