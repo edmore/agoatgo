@@ -2,7 +2,6 @@ package main
 
 import(
 	"github.com/garyburd/redigo/redis"
-        "fmt"
         "strings"
         "log"
 	"os/exec"
@@ -50,7 +49,6 @@ func main() {
 
 		go func(v string){
 			wg.Add(1)
-			fmt.Println("Processing feed for", venue_name, "...")
 			dir := app_root+"/public/feeds/"+venue_name
 			os.MkdirAll(dir, 0755)
 			feed_cmd := openRTSP+` `+login_cridentials+ ` -F `+venue_name+` -d 10 -b 300000 `+cam_url+` \
