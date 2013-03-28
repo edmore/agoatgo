@@ -30,16 +30,14 @@ func main() {
 
 	for _, v := range venue_list {
                 venue := make(map[string]string)
-
 		options := []string{ "venue_name", "cam_url", "cam_user", "cam_password" }
+		ffmpeg := getPath("ffmpeg")
+		openRTSP := getPath("openRTSP")
+		login_cridentials := ""
 
 		for _, o := range options {
 			venue[o], _ =  redis.String(c.Do("GET", "venue:" + v + ":" + o))
 		}
-
-		ffmpeg := getPath("ffmpeg")
-		openRTSP := getPath("openRTSP")
-		login_cridentials := ""
 
 		if (venue["cam_user"] != ""){
 			login_cridentials = "-u "+venue["cam_user"]+" "+venue["cam_password"]
