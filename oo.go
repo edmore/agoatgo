@@ -1,7 +1,7 @@
 package main
 
-import(
-"fmt"
+import (
+	"fmt"
 )
 
 type Person struct {
@@ -17,7 +17,7 @@ func (p *Person) setName(s string) {
 }
 
 func main() {
-	p := &Person{Name : "Edmore"}
+	p := &Person{Name: "Edmore"}
 	fmt.Println(p.getName())
 	p.setName("Tu")
 	fmt.Println(p.getName())
