@@ -11,7 +11,7 @@ type Node struct {
 var head *Node = new(Node)
 
 func add(d int) {
-	var new_node = new(Node)
+	var new_node *Node = new(Node)
 	new_node.data = d
 
 	if head == nil {
@@ -24,7 +24,7 @@ func add(d int) {
 }
 
 func print() {
-	var current = new(Node)
+	var current *Node = new(Node)
 	current = head
 
 	if current == nil {
